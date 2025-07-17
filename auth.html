@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auth | Rice World Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+
+  <!-- Top Navbar -->
+  <header class="bg-indigo-900 text-white shadow-md">
+    <div class="max-w-screen-xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center space-x-3">
+        <span class="text-3xl">🌾</span>
+        <h1 class="text-xl font-bold">Rice World</h1>
+      </div>
+      <nav class="space-x-4">
+        <a href="about.html" class="hover:underline">About Us</a>
+        <a href="dashboard.html" class="hover:underline">Home</a>
+        <a href="auth.html">
+          <button class="bg-white text-indigo-900 font-medium px-4 py-1.5 rounded-md hover:bg-gray-100">Login</button>
+        </a>
+        <a href="auth.html">
+          <button class="border border-white px-4 py-1.5 rounded-md hover:bg-white hover:text-indigo-900 transition">Sign Up</button>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Auth Section -->
+  <main class="flex-1 flex items-center justify-center py-12 px-4">
+    <div class="bg-white p-10 rounded-xl shadow-xl w-full max-w-md">
+      <div class="flex justify-around mb-8">
+        <button onclick="showForm('login')" id="loginBtn" class="font-semibold text-indigo-900 border-b-2 border-indigo-500 pb-2">Login</button>
+        <button onclick="showForm('signup')" id="signupBtn" class="font-semibold text-gray-500 hover:text-indigo-900 hover:border-indigo-500 pb-2">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" class="w-full mt-1 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" class="w-full mt-1 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+        </div>
+        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700 transition">Login</button>
+      </form>
+
+      <!-- Signup Form -->
+      <form id="signupForm" class="hidden">
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Full Name</label>
+          <input type="text" class="w-full mt-1 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+        </div>
+        <div class="mb-4">
+          <label class="block text-sm font-medium text-gray-700">Email</label>
+          <input type="email" class="w-full mt-1 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+        </div>
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700">Password</label>
+          <input type="password" class="w-full mt-1 p-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" required />
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition">Sign Up</button>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    function showForm(form) {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const loginBtn = document.getElementById('loginBtn');
+      const signupBtn = document.getElementById('signupBtn');
+
+      if (form === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        loginBtn.classList.add('text-indigo-900', 'border-indigo-500');
+        loginBtn.classList.remove('text-gray-500');
+        signupBtn.classList.remove('text-indigo-900', 'border-indigo-500');
+        signupBtn.classList.add('text-gray-500');
+      } else {
+        loginForm.classList.add('hidden');
+        signupForm.classList.remove('hidden');
+        signupBtn.classList.add('text-indigo-900', 'border-indigo-500');
+        signupBtn.classList.remove('text-gray-500');
+        loginBtn.classList.remove('text-indigo-900', 'border-indigo-500');
+        loginBtn.classList.add('text-gray-500');
+      }
+    }
+  </script>
+</body>
+</html>

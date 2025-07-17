@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demand | Rice World Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div class="flex">
+  <!-- Sidebar -->
+  <aside class="w-64 h-screen bg-white border-r border-gray-200 shadow-md flex flex-col py-6 px-4">
+    <div class="flex items-center space-x-3 mb-12 px-2">
+      <div class="text-3xl">🌾</div>
+      <h1 class="text-xl font-bold text-purple-700">Rice World</h1>
+    </div>
+    <nav class="flex flex-col space-y-2 text-gray-600 font-medium text-base">
+      <a href="dashboard.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">🏠</span><span>Home</span></a>
+      <a href="demand.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition bg-purple-100 text-purple-800"><span class="text-2xl">📈</span><span>Demand</span></a>
+      <a href="shipment.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">🚚</span><span>Shipments</span></a>
+      <a href="stock.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📦</span><span>Stock</span></a>
+      <a href="forecast.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📊</span><span>Forecast</span></a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <h2 class="text-3xl font-semibold mb-8 flex items-center gap-2">📝 Demand Entry</h2>
+
+    <!-- Form -->
+    <div class="bg-white p-6 shadow-lg rounded-lg w-full mb-10">
+      <form id="demandForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <input type="text" id="brand" placeholder="Brand" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <input type="text" id="bagSize" placeholder="Bag Size" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <input type="date" id="eta" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <select id="urgency" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400">
+          <option value="">Select Urgency</option>
+          <option value="Urgent">Urgent</option>
+          <option value="Normal">Normal</option>
+        </select>
+        <button type="submit" class="col-span-1 md:col-span-4 mt-4 bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition">Submit</button>
+      </form>
+    </div>
+
+    <!-- Filters -->
+    <div class="mb-6 flex flex-wrap gap-4">
+      <select id="urgencyFilter" class="p-2 border rounded-md">
+        <option value="">Filter by Urgency</option>
+        <option value="Urgent">Urgent</option>
+        <option value="Normal">Normal</option>
+      </select>
+      <select id="etaFilter" class="p-2 border rounded-md">
+        <option value="">Filter by ETA</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white p-6 shadow-lg rounded-lg">
+      <h3 class="text-xl font-semibold mb-4">Submitted Demands</h3>
+      <table class="w-full table-auto text-left border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Brand</th>
+            <th class="px-4 py-2">Bag Size</th>
+            <th class="px-4 py-2">ETA</th>
+            <th class="px-4 py-2">Urgency</th>
+          </tr>
+        </thead>
+        <tbody id="demandTable" class="bg-white">
+          <!-- Dynamic rows will be inserted here -->
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  const form = document.getElementById("demandForm");
+  const demandTable = document.getElementById("demandTable");
+  const urgencyFilter = document.getElementById("urgencyFilter");
+  const etaFilter = document.getElementById("etaFilter");
+
+  let demandData = [
+    { brand: "Super Basmati", bagSize: "50kg", eta: "2025-08-01", urgency: "Urgent" },
+    { brand: "IRRI-6", bagSize: "25kg", eta: "2025-08-03", urgency: "Normal" },
+    { brand: "PK386", bagSize: "10kg", eta: "2025-08-02", urgency: "Urgent" }
+  ];
+
+  function renderTable(data) {
+    demandTable.innerHTML = "";
+    const etas = new Set();
+
+    data.forEach(row => {
+      etas.add(row.eta);
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="px-4 py-2">${row.brand}</td>
+        <td class="px-4 py-2">${row.bagSize}</td>
+        <td class="px-4 py-2">${row.eta}</td>
+        <td class="px-4 py-2">
+          <span class="${row.urgency === "Urgent" ? "bg-red-500" : "bg-green-500"} text-white px-2 py-1 rounded-full text-sm">
+            ${row.urgency}
+          </span>
+        </td>`;
+      demandTable.appendChild(tr);
+    });
+
+    etaFilter.innerHTML = '<option value="">Filter by ETA</option>';
+    [...etas].forEach(date => {
+      const option = document.createElement("option");
+      option.value = date;
+      option.textContent = date;
+      etaFilter.appendChild(option);
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const brand = document.getElementById("brand").value.trim();
+    const bagSize = document.getElementById("bagSize").value.trim();
+    const eta = document.getElementById("eta").value;
+    const urgency = document.getElementById("urgency").value;
+
+    if (!brand || !bagSize || !eta || !urgency) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    demandData.unshift({ brand, bagSize, eta, urgency }); // Add to top
+    applyFilters();
+    form.reset();
+  });
+
+  function applyFilters() {
+    let filtered = demandData;
+    if (urgencyFilter.value) {
+      filtered = filtered.filter(d => d.urgency === urgencyFilter.value);
+    }
+    if (etaFilter.value) {
+      filtered = filtered.filter(d => d.eta === etaFilter.value);
+    }
+    renderTable(filtered);
+  }
+
+  urgencyFilter.addEventListener("change", applyFilters);
+  etaFilter.addEventListener("change", applyFilters);
+
+  renderTable(demandData); // Initial render
+</script>
+
+</body>
+</html>

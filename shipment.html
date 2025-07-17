@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shipments | Rice World Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div class="flex">
+  <!-- Sidebar -->
+  <aside class="w-64 h-screen bg-white border-r border-gray-200 shadow-md flex flex-col py-6 px-4">
+    <div class="flex items-center space-x-3 mb-12 px-2">
+      <div class="text-3xl">🌾</div>
+      <h1 class="text-xl font-bold text-purple-700">Rice World</h1>
+    </div>
+    <nav class="flex flex-col space-y-2 text-gray-600 font-medium text-base">
+      <a href="dashboard.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">🏠</span><span>Home</span></a>
+      <a href="demand.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📈</span><span>Demand</span></a>
+      <a href="shipment.html" class="flex items-center space-x-4 px-3 py-2 rounded-md transition bg-purple-100 text-purple-800"><span class="text-2xl">🚚</span><span>Shipments</span></a>
+      <a href="stock.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📦</span><span>Stock</span></a>
+      <a href="forecast.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📊</span><span>Forecast</span></a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="flex-1 p-10">
+    <h2 class="text-3xl font-semibold mb-8 flex items-center gap-2">🚚 Shipment Dispatch</h2>
+
+    <!-- Form -->
+    <div class="bg-white p-6 shadow-lg rounded-lg w-full mb-10">
+      <form id="shipmentForm" class="grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <input type="text" id="orderRef" placeholder="Order Reference" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <input type="number" id="bags" placeholder="Bags" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <input type="date" id="eta" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400"/>
+        <select id="status" class="p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-400">
+          <option value="">Select Status</option>
+          <option value="In Transit">In Transit</option>
+          <option value="Delivered">Delivered</option>
+        </select>
+        <button type="submit" class="col-span-1 md:col-span-4 mt-4 bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition">Dispatch</button>
+      </form>
+    </div>
+
+    <!-- Filters -->
+    <div class="mb-6 flex flex-wrap gap-4">
+      <select id="etaFilter" class="p-2 border rounded-md">
+        <option value="">Filter by ETA</option>
+      </select>
+      <select id="statusFilter" class="p-2 border rounded-md">
+        <option value="">Filter by Status</option>
+        <option value="In Transit">In Transit</option>
+        <option value="Delivered">Delivered</option>
+      </select>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white p-6 shadow-lg rounded-lg">
+      <h3 class="text-xl font-semibold mb-4">Dispatch History</h3>
+      <table class="w-full table-auto text-left border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2">Order Ref</th>
+            <th class="px-4 py-2">Bags</th>
+            <th class="px-4 py-2">ETA</th>
+            <th class="px-4 py-2">Status</th>
+          </tr>
+        </thead>
+        <tbody id="shipmentTable" class="bg-white"></tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<script>
+  const form = document.getElementById("shipmentForm");
+  const shipmentTable = document.getElementById("shipmentTable");
+  const etaFilter = document.getElementById("etaFilter");
+  const statusFilter = document.getElementById("statusFilter");
+
+  let shipmentData = [
+    { orderRef: "ORD1001", bags: 120, eta: "2025-08-02", status: "In Transit" },
+    { orderRef: "ORD1002", bags: 90, eta: "2025-08-05", status: "Delivered" }
+  ];
+
+  function renderTable(data) {
+    shipmentTable.innerHTML = "";
+    const etaSet = new Set();
+
+    data.forEach(row => {
+      etaSet.add(row.eta);
+
+      const color = row.status === "Delivered" ? "bg-green-500" : "bg-yellow-400";
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="px-4 py-2">${row.orderRef}</td>
+        <td class="px-4 py-2">${row.bags}</td>
+        <td class="px-4 py-2">${row.eta}</td>
+        <td class="px-4 py-2"><span class="${color} text-white px-2 py-1 rounded-full text-sm">${row.status}</span></td>`;
+      shipmentTable.appendChild(tr);
+    });
+
+    etaFilter.innerHTML = '<option value="">Filter by ETA</option>';
+    [...etaSet].forEach(date => {
+      const option = document.createElement("option");
+      option.value = date;
+      option.textContent = date;
+      etaFilter.appendChild(option);
+    });
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const orderRef = document.getElementById("orderRef").value.trim();
+    const bags = document.getElementById("bags").value.trim();
+    const eta = document.getElementById("eta").value;
+    const status = document.getElementById("status").value;
+
+    if (!orderRef || !bags || !eta || !status) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    shipmentData.unshift({ orderRef, bags, eta, status }); // Add to top
+    applyFilters();
+    form.reset();
+  });
+
+  function applyFilters() {
+    let filtered = shipmentData;
+    if (etaFilter.value) {
+      filtered = filtered.filter(s => s.eta === etaFilter.value);
+    }
+    if (statusFilter.value) {
+      filtered = filtered.filter(s => s.status === statusFilter.value);
+    }
+    renderTable(filtered);
+  }
+
+  etaFilter.addEventListener("change", applyFilters);
+  statusFilter.addEventListener("change", applyFilters);
+
+  renderTable(shipmentData); // Initial load
+</script>
+
+</body>
+</html>

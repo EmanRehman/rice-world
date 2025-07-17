@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Forecast | Rice World Portal</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+<div class="flex min-h-screen">
+  <!-- Sidebar -->
+  <aside class="w-64 bg-white border-r border-gray-200 shadow-md flex flex-col py-6 px-4">
+    <!-- Logo Section -->
+    <div class="flex items-center space-x-3 mb-12 px-2">
+      <div class="text-3xl">🌾</div>
+      <h1 class="text-xl font-bold text-purple-700">Rice World</h1>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex flex-col space-y-3 text-gray-600 font-medium text-base">
+      <a href="dashboard.html" class="flex items-center space-x-3 hover:bg-purple-100 text-purple-800 px-3 py-2 rounded-md transition">
+        <span class="text-xl">🏠</span><span>Home</span>
+      </a>
+      <a href="demand.html" class="flex items-center space-x-3 hover:bg-purple-100 px-3 py-2 rounded-md transition">
+        <span class="text-xl">📈</span><span>Demand</span>
+      </a>
+      <a href="shipment.html" class="flex items-center space-x-3 hover:bg-purple-100 px-3 py-2 rounded-md transition">
+        <span class="text-xl">🚚</span><span>Shipments</span>
+      </a>
+      <a href="stock.html" class="flex items-center space-x-3 hover:bg-purple-100 px-3 py-2 rounded-md transition">
+        <span class="text-xl">📦</span><span>Stock</span>
+      </a>
+      <a href="forecast.html" class="flex items-center space-x-3 bg-purple-100 font-semibold text-purple-800 px-3 py-2 rounded-md">
+        <span class="text-xl">📊</span><span>Dashboard</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="flex-1 p-10 space-y-10">
+    <div>
+      <h2 class="text-3xl font-semibold mb-4 flex items-center gap-2">📊 Forecast Overview</h2>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <canvas id="forecastChart" height="100"></canvas>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="text-2xl font-semibold mb-4 flex items-center gap-2">📦 Current Stock Levels by Brand</h2>
+      <div class="bg-white p-6 rounded-lg shadow">
+        <canvas id="stockBarChart" height="100"></canvas>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  // Forecast Line Chart
+  const forecastCtx = document.getElementById("forecastChart").getContext("2d");
+
+  const predictedGradient = forecastCtx.createLinearGradient(0, 0, 0, 400);
+  predictedGradient.addColorStop(0, 'rgba(99, 102, 241, 0.4)');
+  predictedGradient.addColorStop(1, 'rgba(99, 102, 241, 0.05)');
+
+  const actualGradient = forecastCtx.createLinearGradient(0, 0, 0, 400);
+  actualGradient.addColorStop(0, 'rgba(16, 185, 129, 0.4)');
+  actualGradient.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
+
+  new Chart(forecastCtx, {
+    type: "line",
+    data: {
+      labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+      datasets: [
+        {
+          label: "Predicted Demand",
+          data: [100, 120, 140, 160, 180, 200],
+          borderColor: "rgb(99, 102, 241)",
+          backgroundColor: predictedGradient,
+          tension: 0.4,
+          pointBackgroundColor: "#6366f1",
+          fill: true
+        },
+        {
+          label: "Actual Demand",
+          data: [90, 110, 150, 155, 170, 210],
+          borderColor: "rgb(16, 185, 129)",
+          backgroundColor: actualGradient,
+          tension: 0.4,
+          pointBackgroundColor: "#10b981",
+          fill: true
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Monthly Rice Demand Forecast vs Actual",
+          font: {
+            size: 18,
+            weight: "bold"
+          },
+          color: "#1f2937"
+        },
+        legend: {
+          labels: {
+            color: "#4B5563"
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#6B7280"
+          }
+        },
+        x: {
+          ticks: {
+            color: "#6B7280"
+          }
+        }
+      }
+    }
+  });
+
+  // Bar Chart for Stock Levels
+  const barCtx = document.getElementById("stockBarChart").getContext("2d");
+
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Super Basmati', 'IRRI-6', 'PK-386', '1121 Steam'],
+      datasets: [{
+        label: 'Bags in Stock',
+        data: [350, 270, 430, 390],
+        backgroundColor: [
+          '#6366f1',
+          '#10b981',
+          '#f59e0b',
+          '#ec4899'
+        ]
+      }]
+    },
+    options: {
+      plugins: {
+        title: {
+          display: true,
+          text: 'Current Stock Levels by Brand',
+          font: {
+            size: 18,
+            weight: 'bold'
+          },
+          color: "#1f2937"
+        },
+        legend: {
+          display: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            color: "#6B7280"
+          }
+        },
+        x: {
+          ticks: {
+            color: "#6B7280"
+          }
+        }
+      }
+    }
+  });
+</script>
+
+</body>
+</html>

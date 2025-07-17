@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Stock Overview | Rice World</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex bg-gray-100 min-h-screen">
+
+<!-- Sidebar -->
+<aside class="w-64 h-screen bg-white border-r border-gray-200 shadow-md flex flex-col py-6 px-4">
+  <div class="flex items-center space-x-3 mb-12 px-2">
+    <div class="text-3xl">🌾</div>
+    <h1 class="text-xl font-bold text-purple-700">Rice World</h1>
+  </div>
+  <nav class="flex flex-col space-y-2 text-gray-600 font-medium text-base">
+    <a href="dashboard.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">🏠</span><span>Home</span></a>
+    <a href="demand.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📈</span><span>Demand</span></a>
+    <a href="shipment.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">🚚</span><span>Shipments</span></a>
+    <a href="stock.html" class="flex items-center space-x-4 bg-purple-100 text-purple-800 px-3 py-2 rounded-md transition"><span class="text-2xl">📦</span><span>Stock</span></a>
+    <a href="forecast.html" class="flex items-center space-x-4 hover:bg-purple-50 px-3 py-2 rounded-md transition"><span class="text-2xl">📊</span><span>Dashboard</span></a>
+  </nav>
+</aside>
+
+<!-- Main Content -->
+<main class="flex-1 p-10">
+  <h2 class="text-3xl font-bold text-indigo-800 mb-6">📦 Stock Overview</h2>
+
+  <!-- Add New Entry Form -->
+  <div class="bg-white p-6 shadow-lg rounded-lg w-full mb-6">
+    <form id="stockForm" class="grid grid-cols-1 md:grid-cols-5 gap-4 w-full">
+      <input type="text" id="brand" placeholder="Brand" class="p-3 border rounded-md focus:ring-2 focus:ring-purple-400" />
+      <input type="text" id="bagSize" placeholder="Bag Size" class="p-3 border rounded-md focus:ring-2 focus:ring-purple-400" />
+      <input type="number" id="quantity" placeholder="Quantity" class="p-3 border rounded-md focus:ring-2 focus:ring-purple-400" />
+      <input type="text" id="warehouse" placeholder="Warehouse" class="p-3 border rounded-md focus:ring-2 focus:ring-purple-400" />
+      <select id="status" class="p-3 border rounded-md focus:ring-2 focus:ring-purple-400">
+        <option value="">Status</option>
+        <option value="Low Stock">Low Stock</option>
+        <option value="Overstock">Overstock</option>
+        <option value="Normal">Normal</option>
+      </select>
+      <button type="submit" class="col-span-1 md:col-span-5 bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition">Add Entry</button>
+    </form>
+  </div>
+
+  <!-- Filters -->
+  <div class="mb-6 flex flex-wrap gap-4">
+    <select id="statusFilter" class="p-2 border rounded-md">
+      <option value="">Filter by Status</option>
+      <option value="Low Stock">Low Stock</option>
+      <option value="Overstock">Overstock</option>
+      <option value="Normal">Normal</option>
+    </select>
+    <select id="warehouseFilter" class="p-2 border rounded-md">
+      <option value="">Filter by Warehouse</option>
+      <option value="Karachi">Karachi</option>
+      <option value="Lahore">Lahore</option>
+      <option value="Muscat">Muscat</option>
+    </select>
+  </div>
+
+  <!-- Table -->
+  <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
+    <thead class="bg-indigo-100 text-indigo-900 text-sm font-semibold">
+      <tr>
+        <th class="px-6 py-3 text-left">Brand</th>
+        <th class="px-6 py-3 text-left">Bag Size</th>
+        <th class="px-6 py-3 text-left">Quantity</th>
+        <th class="px-6 py-3 text-left">Warehouse</th>
+        <th class="px-6 py-3 text-left">Status</th>
+        <th class="px-6 py-3 text-left">Actions</th>
+      </tr>
+    </thead>
+    <tbody id="stockTable" class="text-sm text-gray-800">
+      <!-- JS renders here -->
+    </tbody>
+  </table>
+</main>
+
+<script>
+  const stockForm = document.getElementById("stockForm");
+  const stockTable = document.getElementById("stockTable");
+  const statusFilter = document.getElementById("statusFilter");
+  const warehouseFilter = document.getElementById("warehouseFilter");
+
+  let stockData = [
+    { brand: "Super Basmati", bagSize: "5kg", quantity: 20, warehouse: "Karachi", status: "Low Stock" },
+    { brand: "IRRI-6", bagSize: "10kg", quantity: 150, warehouse: "Lahore", status: "Overstock" },
+    { brand: "Sella", bagSize: "20kg", quantity: 80, warehouse: "Muscat", status: "Normal" }
+  ];
+
+  function renderStockTable(data) {
+    stockTable.innerHTML = "";
+    data.forEach((row, index) => {
+      let color = row.status === "Low Stock" ? "bg-red-100 text-red-700" :
+                  row.status === "Overstock" ? "bg-yellow-100 text-yellow-800" :
+                  "bg-green-100 text-green-800";
+
+      stockTable.innerHTML += `
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-3">${row.brand}</td>
+          <td class="px-6 py-3">${row.bagSize}</td>
+          <td class="px-6 py-3">${row.quantity}</td>
+          <td class="px-6 py-3">${row.warehouse}</td>
+          <td class="px-6 py-3"><span class="${color} px-2 py-1 rounded-full text-xs">${row.status}</span></td>
+          <td class="px-6 py-3"><button onclick="deleteRow(${index})" class="text-red-600 hover:underline text-sm">Delete</button></td>
+        </tr>`;
+    });
+  }
+
+  function applyFilters() {
+    let filtered = [...stockData];
+    if (statusFilter.value) {
+      filtered = filtered.filter(row => row.status === statusFilter.value);
+    }
+    if (warehouseFilter.value) {
+      filtered = filtered.filter(row => row.warehouse === warehouseFilter.value);
+    }
+    renderStockTable(filtered);
+  }
+
+  function deleteRow(index) {
+    stockData.splice(index, 1);
+    applyFilters();
+  }
+
+  stockForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const brand = document.getElementById("brand").value.trim();
+    const bagSize = document.getElementById("bagSize").value.trim();
+    const quantity = document.getElementById("quantity").value.trim();
+    const warehouse = document.getElementById("warehouse").value.trim();
+    const status = document.getElementById("status").value;
+
+    if (!brand || !bagSize || !quantity || !warehouse || !status) {
+      alert("Please fill all fields");
+      return;
+    }
+
+    stockData.unshift({ brand, bagSize, quantity, warehouse, status });
+    stockForm.reset();
+    applyFilters();
+  });
+
+  statusFilter.addEventListener("change", applyFilters);
+  warehouseFilter.addEventListener("change", applyFilters);
+
+  renderStockTable(stockData); // Initial load
+</script>
+</body>
+</html>
